@@ -1,0 +1,119 @@
+includes:
+- ../../mmsc/configs/datasets/ava/defaults.yaml
+- ../../mmsc/configs/datasets/avaavd/defaults.yaml
+
+model_config:
+  token:
+    audio:
+      layers:
+        - 3
+        - 4
+        - 6
+        - 3
+      num_filters:
+        - 32
+        - 64
+        - 128
+        - 256
+      out_dim: 512
+      encoder_type: ASP
+      n_mels: 64
+      log_input: true
+      fix_layers: all
+      init_weight: save/pretrained/backbone_audio.pth
+
+    video:
+      layers:
+        - 3
+        - 4
+        - 14
+        - 3
+      num_features: 512
+      inplanes: 64
+      fix_layers: all
+      init_weight: save/pretrained/backbone_faces.pth
+    
+    relation:
+      num_shot: ${dataset_config.ava.sampler.num_shot}
+      num_way: ${dataset_config.ava.sampler.num_way}
+      layers:
+        - 8
+        - 6
+      num_filters:
+        - 256
+        - 64
+    
+    base_ckpt_path: '' # the initial parameters
+    base_ckpt_load_backbone_only: false
+
+    losses:
+      - type: mse
+        params:
+          eval_applicable: false
+          loss_weight: 1.0
+
+evaluation:
+  predict: true
+  metrics:
+  - type: der
+    datasets:
+      - avaavd
+    params: 
+      threshold: 0.23
+      min_thres: 0.05
+      max_thres: 0.35
+      step: 0.01
+      relation: true
+      save_dir: ${env.save_dir}
+      ground_truth: ${dataset_config.avaavd.data_dir}/rttms
+
+optimizer:
+  type: Adam
+  allow_unused_parameters: true
+  params:
+    lr: 5e-4
+    weight_decay: 1e-4
+
+scheduler:
+  type: multi_step
+  params:
+    use_warmup: false
+    lr_steps:
+    - 40000
+    - 80000
+    lr_ratio: 0.5
+    warmup_factor: 0.2
+    warmup_iterations: 1000
+
+training:
+  num_workers: 4
+  benchmark: true
+  # these are mostly the same as in COCO detection training
+  clip_norm_mode: all
+  clip_gradients: false
+  lr_scheduler: true
+  lr_ratio: 0.1
+  #dataloader
+  batch_size: 3
+  shuffle: true
+  pin_memory: true
+
+  max_updates: 100000
+  log_interval: 100
+  checkpoint_interval: 1000
+  evaluation_interval: 1000
+  warmup_iterations: 6000
+  dataset_size_proportional_sampling: false
+  early_stop:
+    enabled: false
+    criteria: avaavd/der
+    minimize: true
+  stdout_capture: false
+  find_unused_parameters: false
+
+checkpoint:
+  max_to_keep: 5
+  reset:
+    optimizer: true
+
+#nohup python -u mmsc_exp/run.py config=projects/var/audio_visual_task_ava.yaml datasets=ava model=var run_type=train env.save_dir=./save/var/audio_visual_task_ava/ > nohup.out 2>&1 &

@@ -1,0 +1,60 @@
+dataset_config:
+  voxceleb2:
+    data_dir: ./dataset/voxceleb/voxceleb2
+    max_frame: 200
+    snippet_length: 1
+    processors:
+
+      face_pad_processor:
+        type: face_pad
+        params: 
+          length: ${dataset_config.voxceleb2.snippet_length}
+
+      face_to_tensor_processor:
+        type: face_to_tensor
+        params: {}
+
+      face_augment_processor:
+        type: face_augment
+        params:
+          hflip:
+            prob: 0.5
+          blur:
+            prob: 0.5
+          missing:
+            prob: 1.0
+
+      face_resize_processor:
+        type: face_resize
+        params:
+          dest_size:
+            - 112
+            - 112
+
+      face_normalize_processor:
+        type: face_normalize
+        params:
+          mean: 0.5
+          std: 0.5
+      
+      # audio_augment_processor:
+      #   type: audio_augment
+      #   params:
+      #     musan_path: /Data/musan_split
+      #     rir_path: /Data/RIRS_NOISES/simulated_rirs
+      #     max_frame: ${dataset_config.ava.max_frame}
+
+      audio_normalize_processor:
+        type: audio_normalize
+        params:
+          desired_rms: 0.1
+          eps: 0.0001
+
+      audio_to_tensor_processor:
+        type: audio_to_tensor
+        params: {}
+
+    sampler:
+      type: fewshot
+      num_shot: 1
+      num_way: 20

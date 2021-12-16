@@ -1,0 +1,30 @@
+includes:
+- mix.yaml
+- ../../mmsc/configs/datasets/avaavd/defaults.yaml
+
+model_config:
+  token:
+    base_ckpt_path: 'save/token/best_0.14_20.66.ckpt' # the initial parameters
+    base_ckpt_load_backbone_only: false
+
+evaluation:
+  predict: true
+  metrics:
+  - type: der
+    datasets:
+      - avaavd
+    params: 
+      threshold: 0.14
+      relation: true
+      save_dir: ${env.save_dir}
+      ground_truth: ${dataset_config.avaavd.data_dir}/rttms
+
+training:
+  num_workers: 2
+  benchmark: true
+  #dataloader
+  batch_size: 10
+  shuffle: false
+  pin_memory: true
+
+#nohup python -u mmsc_exp/run.py config=projects/var/audio_visual_task_ava.yaml datasets=ava model=var run_type=train env.save_dir=./save/var/audio_visual_task_ava/ > nohup.out 2>&1 &

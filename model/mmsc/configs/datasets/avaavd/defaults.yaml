@@ -1,0 +1,43 @@
+dataset_config:
+  avaavd:
+    data_dir: ./dataset/
+    max_frame: 200
+    min_frame: 20
+    step_frame: 50
+    snippet_length: 1
+    missing_rate: 0
+
+    processors:
+      face_pad_processor:
+        type: face_pad
+        params: 
+          length: ${dataset_config.avaavd.snippet_length}
+
+      face_to_tensor_processor:
+        type: face_to_tensor
+        params: {}
+
+      face_resize_processor:
+        type: face_resize
+        params:
+          dest_size:
+            - 112
+            - 112
+
+      face_normalize_processor:
+        type: face_normalize
+        params:
+          mean: 0.5
+          std: 0.5
+      
+      audio_normalize_processor:
+        type: audio_normalize
+        params:
+          desired_rms: 0.1
+          eps: 1e-4
+      
+      audio_to_tensor_processor:
+        type: audio_to_tensor
+        params: {}
+    
+    sampler: {}
