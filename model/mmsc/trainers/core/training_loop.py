@@ -55,7 +55,7 @@ class TrainerTrainingLoopMixin(ABC):
             registry.register("current_epoch", self.current_epoch)
 
             # Seed the sampler in case if it is distributed
-            self.dataset_loader.seed_sampler("train", self.current_epoch)
+            self.train_loader.seed_sampler(self.current_epoch)
 
             # For iterable datasets we cannot determine length of dataset properly.
             # For those cases we set num_remaining_batches to be the (number of

@@ -22,7 +22,7 @@ dataset_config:
           blur:
             prob: 0.5
           missing:
-            prob: 1.0
+            prob: 0.2
 
       face_resize_processor:
         type: face_resize

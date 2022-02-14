@@ -32,7 +32,6 @@ class MMSCTrainer(
     TrainerTrainingLoopMixin,
     TrainerDeviceMixin,
     TrainerEvaluationLoopMixin,
-    TrainerProfilingMixin,
     BaseTrainer,
 ):
     def __init__(self, config: DictConfig):
